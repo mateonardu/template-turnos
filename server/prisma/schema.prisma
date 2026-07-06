@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Servicio {
+  id             Int      @id @default(autoincrement())
+  nombre         String
+  descripcion    String?
+  duracionMin    Int
+  precio         Int // en pesos
+  porcentajeSena Int      @default(0)
+  activo         Boolean  @default(true)
+  creadoEn       DateTime @default(now())
+  turnos         Turno[]
+}
+
+model HorarioSemana {
+  id        Int     @id @default(autoincrement())
+  diaSemana Int // 0=domingo a 6=sábado
+  abre      String // "HH:MM"
+  cierra    String // "HH:MM"
+  cerrado   Boolean @default(false)
+}
+
+model Bloqueo {
+  id     Int      @id @default(autoincrement())
+  fecha  DateTime
+  motivo String?
+}
+
+model Turno {
+  id               Int       @id @default(autoincrement())
+  servicioId       Int
+  servicio         Servicio  @relation(fields: [servicioId], references: [id])
+  fecha            DateTime // la fecha del turno
+  horaInicio       String // "HH:MM"
+  horaFin          String // "HH:MM"
+  nombreCliente    String
+  telefonoCliente  String
+  emailCliente     String?
+  montoTotal       Int
+  montoSena        Int
+  estado           String    @default("pendiente") // pendiente | confirmado | cancelado
+  vencePendienteEn DateTime? // para liberar slots no pagados
+  mpPreferenciaId  String? // ID de preferencia de MercadoPago
+  mpPagoId         String?
+  creadoEn         DateTime  @default(now())
+}

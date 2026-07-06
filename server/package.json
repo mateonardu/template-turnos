@@ -1,0 +1,21 @@
+{
+  "name": "template-esteticas-server",
+  "version": "0.1.0",
+  "description": "Backend de turnos para el template de estéticas",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node --watch-path=src src/index.js",
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mercadopago": "^3.2.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.19.3"
+  }
+}
