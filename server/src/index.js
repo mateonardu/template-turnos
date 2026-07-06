@@ -10,6 +10,7 @@ import { serviciosRouter } from './routes/servicios.js';
 import { disponibilidadRouter } from './routes/disponibilidad.js';
 import { turnosRouter } from './routes/turnos.js';
 import { webhooksRouter } from './routes/webhooks.js';
+import { startLimpieza } from './jobs/limpieza.js';
 
 const app = express();
 
@@ -29,4 +30,5 @@ app.use('/api/webhooks', webhooksRouter);
 const PORT = Number(process.env.PORT) || 3001;
 app.listen(PORT, () => {
   console.log(`✅ API de turnos corriendo en http://localhost:${PORT}`);
+  startLimpieza();
 });
