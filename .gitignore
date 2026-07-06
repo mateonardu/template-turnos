@@ -25,3 +25,6 @@ dist-ssr
 
 # Claude Code local
 .claude/settings.local.json
+
+# Variables de entorno (ver .env.example / server/.env.example)
+.env

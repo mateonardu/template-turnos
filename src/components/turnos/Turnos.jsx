@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { siteConfig } from '../../config/site.config'
+import { crearTurno } from '../../services/api'
+import { formatFechaISO } from '../../utils/format'
 import { useTurnos } from './TurnosContext'
 import PasoServicio from './PasoServicio'
 import PasoFecha from './PasoFecha'
 import PasoHorario from './PasoHorario'
 import PasoDatos, { validarDatos } from './PasoDatos'
-import PagoSimulado from './PagoSimulado'
 import Confirmacion from './Confirmacion'
 
 const PASOS = ['Servicio', 'Fecha', 'Horario', 'Tus datos']
@@ -40,8 +41,12 @@ export default function Turnos() {
   const [hora, setHora] = useState(null)
   const [datos, setDatos] = useState(DATOS_INICIALES)
   const [errores, setErrores] = useState({})
-  // 'pasos' (wizard 1-4) → 'pago' (checkout simulado, solo con seña) → 'confirmada'
+  // 'pasos' (wizard 1-4) → 'confirmada' (solo sin seña; con seña se
+  // redirige a MercadoPago y la confirmación vive en /turnos/success)
   const [etapa, setEtapa] = useState('pasos')
+  const [enviando, setEnviando] = useState(false)
+  const [errorEnvio, setErrorEnvio] = useState(null)
+  const [avisoSlot, setAvisoSlot] = useState(null)
   const tarjetaRef = useRef(null)
 
   // Al cambiar de etapa la tarjeta se achica de golpe y el scroll quedaría
@@ -64,6 +69,7 @@ export default function Turnos() {
   const elegirFecha = (nuevaFecha) => {
     setFecha(nuevaFecha)
     setHora(null)
+    setAvisoSlot(null)
   }
 
   const cambiarDato = (clave, valor) => {
@@ -71,12 +77,42 @@ export default function Turnos() {
     setErrores(({ [clave]: _corregido, ...resto }) => resto)
   }
 
-  const confirmarReserva = () => {
+  const confirmarReserva = async () => {
     const nuevosErrores = validarDatos(datos)
     setErrores(nuevosErrores)
-    if (Object.keys(nuevosErrores).length === 0) {
-      // Con seña: primero el checkout simulado; sin seña: confirmación directa.
-      setEtapa(servicio.porcentajeSena > 0 ? 'pago' : 'confirmada')
+    if (Object.keys(nuevosErrores).length > 0) return
+
+    setEnviando(true)
+    setErrorEnvio(null)
+    try {
+      const { mpInitPoint } = await crearTurno({
+        servicioId: servicio.id,
+        fecha: formatFechaISO(fecha),
+        horaInicio: hora,
+        nombreCliente: datos.nombre.trim(),
+        telefonoCliente: datos.telefono.trim(),
+        emailCliente: datos.email.trim() || undefined,
+      })
+
+      if (mpInitPoint) {
+        // Con seña: checkout real de MercadoPago. La confirmación
+        // sigue en /turnos/success cuando MP redirige de vuelta.
+        window.location.href = mpInitPoint
+        return
+      }
+      // Sin seña: el backend ya lo confirmó.
+      setEtapa('confirmada')
+    } catch (error) {
+      if (error.status === 409) {
+        // Otro cliente ganó el slot mientras completaba sus datos.
+        setHora(null)
+        setAvisoSlot('Ese horario ya fue reservado. Elegí otro horario.')
+        setPaso(3)
+      } else {
+        setErrorEnvio('No pudimos procesar tu reserva. Intentá de nuevo.')
+      }
+    } finally {
+      setEnviando(false)
     }
   }
 
@@ -117,11 +153,6 @@ export default function Turnos() {
               datos={datos}
               onReiniciar={reiniciar}
             />
-          ) : etapa === 'pago' ? (
-            <PagoSimulado
-              servicio={servicio}
-              onPagado={() => setEtapa('confirmada')}
-            />
           ) : (
             <>
               <IndicadorPasos actual={paso} />
@@ -135,7 +166,11 @@ export default function Turnos() {
                   servicio={servicio}
                   fecha={fecha}
                   hora={hora}
-                  onElegirHora={setHora}
+                  onElegirHora={(h) => {
+                    setHora(h)
+                    setAvisoSlot(null)
+                  }}
+                  aviso={avisoSlot}
                 />
               )}
               {paso === 4 && (
@@ -172,12 +207,23 @@ export default function Turnos() {
                   <button
                     type="button"
                     onClick={confirmarReserva}
-                    className="flex-1 rounded-full bg-primary px-6 py-3 font-semibold text-white transition-opacity hover:opacity-90"
+                    disabled={enviando}
+                    className="flex-1 rounded-full bg-primary px-6 py-3 font-semibold text-white transition-opacity enabled:hover:opacity-90 disabled:opacity-70"
                   >
-                    Confirmar reserva
+                    {enviando
+                      ? 'Procesando...'
+                      : servicio?.porcentajeSena > 0
+                        ? 'Continuar al pago'
+                        : 'Confirmar reserva'}
                   </button>
                 )}
               </div>
+
+              {errorEnvio && (
+                <p className="mt-3 rounded-xl bg-red-50 p-3 text-center text-sm text-red-600">
+                  {errorEnvio}
+                </p>
+              )}
             </>
           )}
         </div>

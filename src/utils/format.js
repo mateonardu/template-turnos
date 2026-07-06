@@ -20,3 +20,13 @@ export function formatFecha(fecha) {
     month: 'long',
   })
 }
+
+/**
+ * Date → "2026-07-08" en hora LOCAL, para la API.
+ * Nunca toISOString: en UTC-3 correría la fecha un día.
+ */
+export function formatFechaISO(fecha) {
+  const mes = String(fecha.getMonth() + 1).padStart(2, '0')
+  const dia = String(fecha.getDate()).padStart(2, '0')
+  return `${fecha.getFullYear()}-${mes}-${dia}`
+}
