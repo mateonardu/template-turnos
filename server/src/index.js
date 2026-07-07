@@ -15,8 +15,12 @@ import { startLimpieza } from './jobs/limpieza.js';
 
 const app = express();
 
-// El frontend Vite corre en 5173.
-app.use(cors({ origin: 'http://localhost:5173' }));
+// Orígenes permitidos separados por coma en ALLOWED_ORIGINS; en dev, el frontend Vite corre en 5173.
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim())
+  : ['http://localhost:5173'];
+
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 app.get('/api/health', (req, res) => {
