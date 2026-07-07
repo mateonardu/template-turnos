@@ -70,3 +70,57 @@ export async function crearTurno(datos) {
 export function getTurno(id) {
   return pedir(`/api/turnos/${id}`)
 }
+
+// ---------- Panel de administración ----------
+
+const conAuth = (token) => ({ Authorization: `Bearer ${token}` })
+
+/** Devuelve { token, usuario } o lanza ApiError 401. */
+export function adminLogin(usuario, password) {
+  return pedir('/api/admin/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ usuario, password }),
+  })
+}
+
+/**
+ * Turnos de un día (default hoy), opcionalmente filtrados por estado.
+ *
+ * @param {string} [fecha] - "YYYY-MM-DD"
+ * @param {string} [estado] - "pendiente" | "confirmado" | "cancelado"
+ * @param {string} token
+ */
+export function getAdminTurnos(fecha, estado, token) {
+  const params = new URLSearchParams()
+  if (fecha) params.set('fecha', fecha)
+  if (estado) params.set('estado', estado)
+  const query = params.size > 0 ? `?${params}` : ''
+  return pedir(`/api/admin/turnos${query}`, { headers: conAuth(token) })
+}
+
+export function cancelarTurno(id, token) {
+  return pedir(`/api/admin/turnos/${id}/cancelar`, {
+    method: 'PATCH',
+    headers: conAuth(token),
+  })
+}
+
+export function getBloqueos(token) {
+  return pedir('/api/admin/bloqueos', { headers: conAuth(token) })
+}
+
+export function crearBloqueo(fecha, motivo, token) {
+  return pedir('/api/admin/bloqueos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...conAuth(token) },
+    body: JSON.stringify({ fecha, motivo }),
+  })
+}
+
+export function eliminarBloqueo(id, token) {
+  return pedir(`/api/admin/bloqueos/${id}`, {
+    method: 'DELETE',
+    headers: conAuth(token),
+  })
+}

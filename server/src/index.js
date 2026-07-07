@@ -10,6 +10,7 @@ import { serviciosRouter } from './routes/servicios.js';
 import { disponibilidadRouter } from './routes/disponibilidad.js';
 import { turnosRouter } from './routes/turnos.js';
 import { webhooksRouter } from './routes/webhooks.js';
+import { adminRouter } from './routes/admin.js';
 import { startLimpieza } from './jobs/limpieza.js';
 
 const app = express();
@@ -26,6 +27,7 @@ app.use('/api/servicios', serviciosRouter);
 app.use('/api/disponibilidad', disponibilidadRouter);
 app.use('/api/turnos', turnosRouter);
 app.use('/api/webhooks', webhooksRouter);
+app.use('/api/admin', adminRouter);
 
 const PORT = Number(process.env.PORT) || 3001;
 app.listen(PORT, () => {
