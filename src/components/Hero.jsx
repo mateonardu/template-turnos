@@ -16,7 +16,11 @@ export default function Hero() {
       <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
 
       <div className="relative z-10 flex max-w-2xl flex-col items-center gap-4 px-6 py-16 text-center text-white">
-        <img src={marca.logo} alt="" className="h-20 w-20 md:h-24 md:w-24" />
+        <img
+          src={marca.logo}
+          alt=""
+          className="h-20 w-20 rounded-full border-2 border-white p-1.5 md:h-24 md:w-24"
+        />
 
         <h1 className="font-heading text-4xl font-bold md:text-6xl">
           {marca.nombre}
