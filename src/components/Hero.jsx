@@ -19,7 +19,7 @@ export default function Hero() {
         <img
           src={marca.logo}
           alt=""
-          className="h-20 w-20 rounded-full border-2 border-white p-1.5 md:h-24 md:w-24"
+          className="h-20 w-20 rounded-full bg-white p-2 shadow-lg md:h-24 md:w-24"
         />
 
         <h1 className="font-heading text-4xl font-bold md:text-6xl">
