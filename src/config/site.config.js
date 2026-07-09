@@ -6,10 +6,10 @@
 
 import logoAura from '../assets/logo-aura.svg'
 import heroFondo from '../assets/hero-fondo.webp'
-import imgLimpieza from '../assets/hero-bg.svg'
-import imgCejas from '../assets/hero-bg.svg'
-import imgPestanas from '../assets/hero-bg.svg'
-import imgManicura from '../assets/hero-bg.svg'
+import imgLimpieza from '../assets/limpieza.webp'
+import imgCejas from '../assets/cejas.webp'
+import imgPestanas from '../assets/lifting-pestanas.webp'
+import imgManicura from '../assets/manicura.webp'
 
 export const siteConfig = {
   marca: {
