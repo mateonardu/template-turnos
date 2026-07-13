@@ -19,6 +19,8 @@
   --color-promo-bar-foreground: var(--color-promo-bar-texto);
   --color-exito: var(--color-exito);
   --color-estrellas: var(--color-estrellas);
+  --color-footer: var(--color-footer-fondo);
+  --color-footer-foreground: var(--color-footer-texto);
 
   --font-heading: var(--fuente-titulos);
   --font-body: var(--fuente-texto);
@@ -46,6 +48,18 @@ html {
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* Marquee infinito de Testimonios: el track dibuja el set de tarjetas
+   dos veces y recorre exactamente el ancho de un set, así el loop no
+   se nota. */
+@keyframes aura-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
   }
 }
 

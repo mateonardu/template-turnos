@@ -33,6 +33,8 @@ export const siteConfig = {
       promoBarTexto: '#f6eae6',
       exito: '#5fa97c',
       estrellas: '#c9973f',
+      footerFondo: '#3a2c2f',
+      footerTexto: '#d9c8c3',
     },
     fuenteTitulos: "'Playfair Display', Georgia, serif",
     fuenteTexto: "'Inter', system-ui, sans-serif",
@@ -60,6 +62,9 @@ export const siteConfig = {
     galeria: {
       titulo: 'Nuestro trabajo',
       subtitulo: 'Resultados reales de nuestros tratamientos.',
+      tabGrilla: 'Grilla',
+      tabCarrusel: 'Carrusel',
+      hintCarrusel: 'Deslizá para ver más →',
     },
     testimonios: {
       titulo: 'Lo que dicen nuestras clientas',
@@ -123,7 +128,15 @@ export const siteConfig = {
     },
   ],
 
-  galeria: [heroFondo, imgLimpieza, imgCejas, imgPestanas],
+  // `alto` es el peso relativo de cada foto en la grilla asimétrica
+  // (masonry): a mayor valor, más alta la tarjeta.
+  galeria: [
+    { imagen: imgLimpieza, alto: 340 },
+    { imagen: imgCejas, alto: 260 },
+    { imagen: imgPestanas, alto: 400 },
+    { imagen: heroFondo, alto: 300 },
+    { imagen: imgManicura, alto: 360 },
+  ],
 
   testimonios: [
     {

@@ -10,11 +10,13 @@ export default function Footer() {
   const anio = new Date().getFullYear()
 
   return (
-    <footer className="bg-foreground px-6 py-12 text-background">
+    <footer className="bg-footer px-6 py-12 text-footer-foreground">
       <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-3">
         <div>
-          <p className="font-heading text-xl font-bold">{marca.nombre}</p>
-          <p className="mt-2 text-sm opacity-80">{marca.descripcionCorta}</p>
+          <p className="font-heading text-xl font-semibold text-white">{marca.nombre}</p>
+          <p className="mt-3 max-w-[44ch] text-sm leading-relaxed opacity-80">
+            {marca.descripcionCorta}
+          </p>
         </div>
 
         <nav aria-label="Accesos rápidos">
@@ -66,7 +68,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto mt-10 max-w-6xl border-t border-background/20 pt-6 text-center text-xs opacity-70">
+      <div className="mx-auto mt-10 max-w-6xl border-t border-footer-foreground/15 pt-6 text-center text-xs opacity-70">
         © {anio} {marca.nombre}.{' '}
         <a
           href={creditos.url}
