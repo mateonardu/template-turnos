@@ -10,13 +10,18 @@
  */
 @theme inline {
   --color-primary: var(--color-primario);
+  --color-primary-hover: var(--color-primario-hover);
   --color-secondary: var(--color-secundario);
   --color-background: var(--color-fondo);
   --color-foreground: var(--color-texto);
   --color-accent: var(--color-acento);
+  --color-promo-bar: var(--color-promo-bar-fondo);
+  --color-promo-bar-foreground: var(--color-promo-bar-texto);
+  --color-exito: var(--color-exito);
 
   --font-heading: var(--fuente-titulos);
   --font-body: var(--fuente-texto);
+  --font-ui: var(--fuente-ui);
 }
 
 /* Oculta el scrollbar sin desactivar el scroll (carruseles). */
@@ -31,9 +36,9 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Compensa el header fijo al navegar por anclas */
+/* Compensa la altura del header sticky (barra promo + nav) al navegar por anclas */
 section[id] {
-  scroll-margin-top: 4.5rem;
+  scroll-margin-top: 6.75rem;
 }
 
 body {

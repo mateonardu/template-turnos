@@ -24,13 +24,18 @@ export const siteConfig = {
   tema: {
     colores: {
       primario: '#b76e79',   // rosa viejo
+      primarioHover: '#9e5a6c',
       secundario: '#f3e5e0', // nude claro
       fondo: '#fdf9f7',
       texto: '#3d2c2e',
       acento: '#8a5a44',     // marrón cálido
+      promoBarFondo: '#4a353b',
+      promoBarTexto: '#f6eae6',
+      exito: '#5fa97c',
     },
     fuenteTitulos: "'Playfair Display', Georgia, serif",
     fuenteTexto: "'Inter', system-ui, sans-serif",
+    fuenteUI: "'Karla', system-ui, sans-serif",
   },
 
   textos: {
@@ -167,6 +172,28 @@ export const siteConfig = {
     activa: true,
     titulo: '20% OFF en tu primera visita',
     texto: 'Mencioná la promo al reservar por WhatsApp y obtené el descuento en cualquier servicio.',
+  },
+
+  // Barra fija de promociones, arriba del todo. Rota entre los mensajes cada
+  // `rotarCadaSegundos`. El cupón es opcional: si un mensaje no lo trae, no
+  // se muestra el badge ni el botón de copiar.
+  promoBar: {
+    activa: true,
+    rotarCadaSegundos: 5,
+    mensajes: [
+      {
+        texto: '20% OFF en tu primera visita, reservando online',
+        cupon: 'AURA20',
+      },
+      {
+        texto: 'Martes de cejas: 2x1 en perfilado reservando online',
+        cupon: 'CEJAS2X1',
+      },
+      {
+        texto: 'Este mes: 15% en limpiezas faciales profundas',
+        cupon: 'GLOW15',
+      },
+    ],
   },
 
   // Crédito del desarrollador en el footer.
