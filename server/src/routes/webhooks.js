@@ -36,6 +36,27 @@ webhooksRouter.post('/mercadopago', async (req, res) => {
   }
 
   if (pago.status === 'approved') {
+    const turno = await prisma.turno.findUnique({
+      where: { id: turnoId },
+      select: { estado: true },
+    });
+
+    if (!turno) {
+      console.error(`Webhook MP: pago ${pago.id} aprobado para turno inexistente ${turnoId}`);
+      return res.sendStatus(200);
+    }
+
+    // Si el job de limpieza ya lo canceló (venció el pendiente), no lo
+    // resucitamos: el slot pudo haber sido tomado por otra clienta.
+    if (turno.estado === 'cancelado') {
+      console.error(
+        `Pago aprobado sobre turno cancelado (id: ${turnoId}, pago: ${pago.id}) — requiere revisión manual`,
+      );
+      return res.sendStatus(200); // MP no debe reintentar esto
+    }
+
+    // Pendiente o ya confirmado (el webhook puede llegar dos veces):
+    // confirmar y guardar el mpPagoId es idempotente.
     await prisma.turno.update({
       where: { id: turnoId },
       data: {
