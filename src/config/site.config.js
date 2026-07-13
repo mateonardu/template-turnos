@@ -47,7 +47,6 @@ export const siteConfig = {
       subcopy:
         'Cinco años cuidando rostros en Palermo. Elegí tu tratamiento, el día y la hora directo desde acá, sin mensajes, sin espera.',
       ctaPrimario: 'Reservar turno online →',
-      ctaSecundario: 'o escribinos por WhatsApp',
       disponibilidad: 'Hoy hay turnos disponibles',
       ratingValor: '4,9',
       ratingTexto: 'en Google · más de 500 clientas nos eligen',

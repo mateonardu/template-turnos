@@ -1,5 +1,4 @@
 import { siteConfig } from '../config/site.config'
-import { linkConsultaGeneral } from '../utils/whatsapp'
 
 // Tailwind extrae clases del texto fuente tal cual está escrito, así que los
 // delays van como literales completos (no se pueden armar con template
@@ -17,7 +16,6 @@ const ANIM_IMAGEN =
 export default function Hero() {
   const { marca, textos } = siteConfig
   const { hero } = textos
-  const whatsappUrl = linkConsultaGeneral()
 
   return (
     <section
@@ -25,20 +23,30 @@ export default function Hero() {
       aria-label={marca.nombre}
       className="relative min-h-[clamp(560px,88vh,860px)] overflow-hidden bg-background"
     >
-      <img
-        src={marca.heroImagen}
-        alt=""
-        className={`absolute inset-0 h-full w-full object-cover object-[62%_30%] ${ANIM_IMAGEN}`}
-      />
-
-      {/* Degradado de fondo → transparente. Cortes fijos (no %) entre mobile
-          y tablet (hasta 1023px) para que nunca quede detrás de la columna
-          de texto (max-w 440px); de lg en adelante, % ya es seguro porque
-          el contenedor tiene max-width propio. */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-[linear-gradient(90deg,var(--color-fondo)_0px,var(--color-fondo)_560px,transparent_680px)] lg:bg-[linear-gradient(90deg,var(--color-fondo)_0%,var(--color-fondo)_55%,transparent_68%)]"
-      />
+      {/* Hero split: la imagen vive en su propia franja a la derecha, nunca
+          debajo de la columna de texto. object-fit:cover en un contenedor
+          full-bleed no garantiza eso (con cajas muy anchas el navegador no
+          tiene margen horizontal para recortar y el sujeto queda centrado,
+          justo donde está el texto) — por eso el corte es un límite real,
+          no un degradado sobre la imagen entera.
+          Cortes en px fijos entre md y el ancho del contenedor (1240px,
+          el mismo max-w de más abajo); de ahí en adelante ya es seguro
+          usar % porque el contenedor deja de crecer. */}
+      <div className="absolute inset-y-0 left-0 right-0 md:left-[580px] min-[1240px]:left-[46%]">
+        <img
+          src={marca.heroImagen}
+          alt=""
+          className={`h-full w-full object-cover object-[46%_20%] md:object-[48%_50%] ${ANIM_IMAGEN}`}
+        />
+        {/* velo sólido: en mobile la franja ocupa todo el ancho, así que hace
+            falta para que el texto siga siendo legible sobre la foto */}
+        <div className="absolute inset-0 bg-background/85 md:hidden" aria-hidden="true" />
+        {/* fundido suave en el borde de la franja, ya con la imagen acotada */}
+        <div
+          className="absolute inset-y-0 left-0 hidden w-24 bg-gradient-to-r from-background to-transparent md:block lg:w-32"
+          aria-hidden="true"
+        />
+      </div>
 
       <div className="relative mx-auto flex min-h-[clamp(560px,88vh,860px)] max-w-[1240px] items-center px-[clamp(20px,5vw,64px)] py-[clamp(40px,7vh,84px)]">
         <div className="flex max-w-[440px] flex-col justify-center">
@@ -68,14 +76,6 @@ export default function Hero() {
               className="inline-flex items-center gap-2.5 rounded-full bg-primary px-[34px] py-[17px] text-[16.5px] font-bold text-white shadow-[0_10px_28px_rgba(178,107,124,.35)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-[0_14px_34px_rgba(178,107,124,.42)]"
             >
               {hero.ctaPrimario}
-            </a>
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-foreground/60 underline underline-offset-4 transition-colors hover:text-primary"
-            >
-              {hero.ctaSecundario}
             </a>
           </div>
 
