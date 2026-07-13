@@ -29,10 +29,14 @@ export default function Hero() {
           tiene margen horizontal para recortar y el sujeto queda centrado,
           justo donde está el texto) — por eso el corte es un límite real,
           no un degradado sobre la imagen entera.
-          Cortes en px fijos entre md y el ancho del contenedor (1240px,
-          el mismo max-w de más abajo); de ahí en adelante ya es seguro
-          usar % porque el contenedor deja de crecer. */}
-      <div className="absolute inset-y-0 left-0 right-0 md:left-[580px] min-[1240px]:left-[46%]">
+          Cortes en px fijos entre md y xl (1280px, ya pasado el ancho del
+          contenedor de 1240px); de ahí en adelante ya es seguro usar %
+          porque el contenedor deja de crecer. Se usa el breakpoint `xl`
+          de Tailwind (no uno arbitrario `min-[]`) porque un arbitrario no
+          siempre gana la cascada frente a `md` al mismo ancho. Margen de
+          ~90-100px después del borde real de la columna de texto en
+          todos los anchos. */}
+      <div className="absolute inset-y-0 left-0 right-0 md:left-[610px] xl:left-[50%]">
         <img
           src={marca.heroImagen}
           alt=""
