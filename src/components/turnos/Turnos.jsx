@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { siteConfig } from '../../config/site.config'
-import { crearTurno } from '../../services/api'
+import { crearTurno, getServicios } from '../../services/api'
 import { formatFechaISO } from '../../utils/format'
 import { useTurnos } from './TurnosContext'
-import PasoServicio from './PasoServicio'
 import PasoFecha from './PasoFecha'
 import PasoHorario from './PasoHorario'
 import PasoDatos, { validarDatos } from './PasoDatos'
@@ -12,14 +11,30 @@ import Confirmacion from './Confirmacion'
 const PASOS = ['Servicio', 'Fecha', 'Horario', 'Tus datos']
 const DATOS_INICIALES = { nombre: '', telefono: '', email: '' }
 
-function IndicadorPasos({ actual }) {
+function irAServicios() {
+  document.getElementById('servicios')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function IndicadorPasos({ actual, servicio, onCambiar }) {
   return (
     <div className="mb-6">
-      <p className="text-sm opacity-70">
-        Paso {actual} de {PASOS.length}:{' '}
-        <span className="font-semibold opacity-100">{PASOS[actual - 1]}</span>
-      </p>
-      <div className="mt-2 flex gap-1.5" aria-hidden="true">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm opacity-70">
+          Paso {actual} de {PASOS.length}:{' '}
+          <span className="font-semibold opacity-100">{PASOS[actual - 1]}</span>
+        </p>
+        <span className="inline-flex items-center gap-2 rounded-full bg-secondary py-1.5 pr-1.5 pl-3 text-sm font-medium">
+          {servicio.nombre}
+          <button
+            type="button"
+            onClick={onCambiar}
+            className="rounded-full border border-white bg-white px-2.5 py-1 text-xs font-bold text-primary transition-colors hover:border-primary/40"
+          >
+            Cambiar
+          </button>
+        </span>
+      </div>
+      <div className="mt-3 flex gap-1.5" aria-hidden="true">
         {PASOS.map((nombre, i) => (
           <span
             key={nombre}
@@ -33,21 +48,59 @@ function IndicadorPasos({ actual }) {
   )
 }
 
+function EstadoVacio() {
+  const { estadoVacioTitulo, estadoVacioTexto, estadoVacioBoton } = siteConfig.textos.turnos
+
+  return (
+    <div className="py-6 text-center">
+      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary font-heading text-xl text-primary">
+        1
+      </div>
+      <p className="font-heading text-xl font-semibold">{estadoVacioTitulo}</p>
+      <p className="mx-auto mt-2 max-w-xs text-sm opacity-70">{estadoVacioTexto}</p>
+      <button
+        type="button"
+        onClick={irAServicios}
+        className="mt-5 rounded-full border-2 border-secondary px-6 py-2.5 text-sm font-semibold transition-colors hover:bg-secondary"
+      >
+        {estadoVacioBoton}
+      </button>
+    </div>
+  )
+}
+
 export default function Turnos() {
   const { titulo, subtitulo } = siteConfig.textos.turnos
   const { servicio, elegirServicio } = useTurnos()
-  const [paso, setPaso] = useState(1)
+  const [paso, setPaso] = useState(2)
   const [fecha, setFecha] = useState(null)
   const [hora, setHora] = useState(null)
   const [datos, setDatos] = useState(DATOS_INICIALES)
   const [errores, setErrores] = useState({})
-  // 'pasos' (wizard 1-4) → 'confirmada' (solo sin seña; con seña se
+  // 'pasos' (wizard 2-4) → 'confirmada' (solo sin seña; con seña se
   // redirige a MercadoPago y la confirmación vive en /turnos/success)
   const [etapa, setEtapa] = useState('pasos')
   const [enviando, setEnviando] = useState(false)
   const [errorEnvio, setErrorEnvio] = useState(null)
   const [avisoSlot, setAvisoSlot] = useState(null)
+  const [serviciosApi, setServiciosApi] = useState(null)
   const tarjetaRef = useRef(null)
+
+  // Servicios reales de la BD: hacen falta para reconciliar el servicio
+  // elegido desde una card (que viene del id string del config) con su
+  // equivalente real, cuyo id numérico espera la API al crear el turno.
+  useEffect(() => {
+    getServicios()
+      .then(setServiciosApi)
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    if (!serviciosApi || !servicio) return
+    if (serviciosApi.some((s) => s.id === servicio.id)) return
+    const real = serviciosApi.find((s) => s.nombre === servicio.nombre)
+    elegirServicio(real ?? null)
+  }, [serviciosApi, servicio, elegirServicio])
 
   // Al cambiar de etapa la tarjeta se achica de golpe y el scroll quedaría
   // apuntando a las secciones de abajo: re-encuadramos el wizard.
@@ -57,14 +110,20 @@ export default function Turnos() {
     }
   }, [etapa])
 
-  // Si cambia el servicio (acá o desde una card), el horario elegido deja
-  // de valer: los slots se recalculan con la nueva duración. Si ya se había
-  // avanzado más allá del paso de horario, se vuelve a él.
+  // Selección nueva de servicio (desde una card, o cambiando de una a
+  // otra): arranca el wizard limpio, directo en el paso de Fecha. Se
+  // dispara por nombre y no por id para no reiniciar el progreso cuando
+  // lo único que cambia es el id real reconciliado arriba (mismo servicio).
   useEffect(() => {
+    if (!servicio) return
+    setFecha(null)
     setHora(null)
+    setDatos(DATOS_INICIALES)
+    setErrores({})
+    setAvisoSlot(null)
     setEtapa('pasos')
-    setPaso((p) => (p === 4 ? 3 : p))
-  }, [servicio?.id])
+    setPaso(2)
+  }, [servicio?.nombre])
 
   const elegirFecha = (nuevaFecha) => {
     setFecha(nuevaFecha)
@@ -118,7 +177,7 @@ export default function Turnos() {
 
   const reiniciar = () => {
     elegirServicio(null)
-    setPaso(1)
+    setPaso(2)
     setFecha(null)
     setHora(null)
     setDatos(DATOS_INICIALES)
@@ -126,10 +185,20 @@ export default function Turnos() {
     setEtapa('pasos')
   }
 
+  // Deselecciona el servicio y vuelve a la sección de tarjetas: lo usan
+  // tanto el botón "Cambiar" del chip como el estado vacío.
+  const cambiarServicio = () => {
+    elegirServicio(null)
+    setFecha(null)
+    setHora(null)
+    setDatos(DATOS_INICIALES)
+    setErrores({})
+    setEtapa('pasos')
+    irAServicios()
+  }
+
   const puedeContinuar =
-    (paso === 1 && servicio != null) ||
-    (paso === 2 && fecha != null) ||
-    (paso === 3 && hora != null)
+    (paso === 2 && fecha != null) || (paso === 3 && hora != null)
 
   return (
     <section id="turnos" className="px-6 py-16">
@@ -153,11 +222,12 @@ export default function Turnos() {
               datos={datos}
               onReiniciar={reiniciar}
             />
+          ) : !servicio ? (
+            <EstadoVacio />
           ) : (
             <>
-              <IndicadorPasos actual={paso} />
+              <IndicadorPasos actual={paso} servicio={servicio} onCambiar={cambiarServicio} />
 
-              {paso === 1 && <PasoServicio />}
               {paso === 2 && (
                 <PasoFecha fecha={fecha} onElegirFecha={elegirFecha} />
               )}
@@ -185,15 +255,13 @@ export default function Turnos() {
               )}
 
               <div className="mt-6 flex gap-3">
-                {paso > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => setPaso(paso - 1)}
-                    className="rounded-full border-2 border-secondary px-6 py-3 font-semibold transition-colors hover:bg-secondary"
-                  >
-                    Volver
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => (paso === 2 ? cambiarServicio() : setPaso(paso - 1))}
+                  className="rounded-full border-2 border-secondary px-6 py-3 font-semibold transition-colors hover:bg-secondary"
+                >
+                  Volver
+                </button>
                 {paso < 4 ? (
                   <button
                     type="button"

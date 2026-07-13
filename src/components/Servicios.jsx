@@ -4,45 +4,46 @@ import { useTurnos } from './turnos/TurnosContext'
 
 function ServicioCard({ servicio }) {
   const { elegirServicio } = useTurnos()
+  const { badgeDestacado, cta } = siteConfig.textos.servicios
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-2xl bg-white shadow-md">
-      <div className="relative">
+    <a
+      href="#turnos"
+      onClick={() => elegirServicio(servicio)}
+      className="flex flex-col overflow-hidden rounded-[20px] border border-secondary/70 bg-white shadow-[0_8px_26px_rgba(74,53,59,.08)] transition-all duration-300 hover:-translate-y-[5px] hover:border-primary hover:shadow-[0_18px_40px_rgba(74,53,59,.14)]"
+    >
+      <div className="relative aspect-[4/3]">
         <img
           src={servicio.imagen}
           alt={servicio.nombre}
           loading="lazy"
-          className="h-48 w-full object-cover"
+          className="h-full w-full object-cover"
         />
         {servicio.destacado && (
-          <span className="absolute top-3 right-3 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-white">
-            Más pedido
+          <span className="absolute top-3 right-3 rounded-full bg-promo-bar px-3 py-1 text-[10.5px] font-bold tracking-[0.08em] text-promo-bar-foreground uppercase">
+            {badgeDestacado}
           </span>
         )}
       </div>
 
       <div className="flex flex-1 flex-col gap-2 p-5">
         <h3 className="font-heading text-xl font-semibold">{servicio.nombre}</h3>
-        <p className="text-sm opacity-80">{servicio.descripcion}</p>
+        <p className="flex-1 text-sm opacity-80">{servicio.descripcion}</p>
 
-        <div className="mt-auto flex items-center justify-between pt-3">
+        <div className="mt-1 flex items-baseline justify-between gap-3">
           <span className="text-sm opacity-70">
             {formatDuracion(servicio.duracionMin)}
           </span>
-          <span className="text-lg font-bold text-primary">
+          <span className="font-heading text-lg font-bold text-primary">
             {formatPrecio(servicio.precio)}
           </span>
         </div>
 
-        <a
-          href="#turnos"
-          onClick={() => elegirServicio(servicio)}
-          className="mt-2 rounded-full bg-primary px-6 py-2.5 text-center font-semibold text-white transition-opacity hover:opacity-90"
-        >
-          Reservar
-        </a>
+        <div className="mt-2 border-t border-secondary/70 pt-3 text-sm font-bold text-primary">
+          {cta}
+        </div>
       </div>
-    </article>
+    </a>
   )
 }
 
@@ -59,7 +60,7 @@ export default function Servicios() {
           <p className="mt-2 opacity-80">{subtitulo}</p>
         </header>
 
-        <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid grid-cols-[repeat(auto-fit,minmax(245px,1fr))] gap-[22px]">
           {siteConfig.servicios.map((servicio) => (
             <li key={servicio.id}>
               <ServicioCard servicio={servicio} />

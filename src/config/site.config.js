@@ -54,6 +54,8 @@ export const siteConfig = {
     servicios: {
       titulo: 'Nuestros servicios',
       subtitulo: 'Elegí tu tratamiento y reservá tu turno en un toque.',
+      badgeDestacado: 'Más pedido',
+      cta: 'Elegir día y hora →',
     },
     galeria: {
       titulo: 'Nuestro trabajo',
@@ -66,6 +68,10 @@ export const siteConfig = {
     turnos: {
       titulo: 'Reservá tu turno',
       subtitulo: 'Elegí el servicio, el día y el horario. Te esperamos.',
+      estadoVacioTitulo: 'Empezá eligiendo un tratamiento',
+      estadoVacioTexto:
+        'Tocá una de las tarjetas de arriba y seguís acá con el día y el horario.',
+      estadoVacioBoton: 'Ver tratamientos ↑',
     },
     ubicacion: {
       titulo: 'Horarios y ubicación',
