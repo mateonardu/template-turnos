@@ -12,7 +12,7 @@ function ServicioCard({ servicio }) {
       onClick={() => elegirServicio(servicio)}
       className="flex flex-col overflow-hidden rounded-[20px] border border-secondary/70 bg-white shadow-[0_8px_26px_rgba(74,53,59,.08)] transition-all duration-300 hover:-translate-y-[5px] hover:border-primary hover:shadow-[0_18px_40px_rgba(74,53,59,.14)]"
     >
-      <div className="relative aspect-[4/3]">
+      <div className="relative h-52">
         <img
           src={servicio.imagen}
           alt={servicio.nombre}
