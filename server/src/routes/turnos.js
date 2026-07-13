@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { prisma, turnosQueOcupan } from '../db.js';
+import { prisma } from '../db.js';
 import { parseFecha } from '../utils/fechas.js';
 import { seSolapan, aMinutos, aHHMM } from '../utils/slots.js';
 import { crearPreferenciaSena } from '../mp.js';
@@ -71,33 +71,69 @@ turnosRouter.post('/', async (req, res) => {
     return res.status(409).json({ error: 'Horario no disponible' });
   }
 
-  const ocupados = await turnosQueOcupan(rango.inicioDia, rango.finDia);
-  const solapado = ocupados.some((t) => seSolapan(horaInicio, horaFin, t.horaInicio, t.horaFin));
-  if (solapado) {
-    return res.status(409).json({ error: 'Horario no disponible' });
-  }
-
   const montoSena = Math.round((servicio.precio * servicio.porcentajeSena) / 100);
   const llevaSena = montoSena > 0;
 
-  const turno = await prisma.turno.create({
-    data: {
-      servicioId: servicio.id,
-      fecha: rango.inicioDia,
-      horaInicio,
-      horaFin,
-      nombreCliente,
-      telefonoCliente,
-      emailCliente: emailCliente || null,
-      montoTotal: servicio.precio,
-      montoSena,
-      // Sin seña no hay nada que cobrar: se confirma directo.
-      estado: llevaSena ? 'pendiente' : 'confirmado',
-      vencePendienteEn: llevaSena
-        ? new Date(Date.now() + MINUTOS_RESERVA_PENDIENTE * 60 * 1000)
-        : null,
-    },
-  });
+  // Check de solapamiento + create en una misma transacción Serializable:
+  // dos requests simultáneos por el mismo slot no pueden pasar ambos
+  // el check y crear los dos turnos (check-then-insert sin protección).
+  let turno;
+  try {
+    turno = await prisma.$transaction(
+      async (tx) => {
+        // Turnos que ocupan agenda en el día: confirmados, más pendientes
+        // cuya reserva todavía no venció (misma query que turnosQueOcupan,
+        // pero sobre tx para que participe de la transacción).
+        const ocupados = await tx.turno.findMany({
+          where: {
+            fecha: { gte: rango.inicioDia, lt: rango.finDia },
+            OR: [
+              { estado: 'confirmado' },
+              { estado: 'pendiente', vencePendienteEn: { gt: new Date() } },
+            ],
+          },
+          select: { horaInicio: true, horaFin: true },
+        });
+        const solapado = ocupados.some((t) =>
+          seSolapan(horaInicio, horaFin, t.horaInicio, t.horaFin),
+        );
+        if (solapado) {
+          const error = new Error('Horario no disponible');
+          error.status = 409;
+          throw error;
+        }
+
+        return tx.turno.create({
+          data: {
+            servicioId: servicio.id,
+            fecha: rango.inicioDia,
+            horaInicio,
+            horaFin,
+            nombreCliente,
+            telefonoCliente,
+            emailCliente: emailCliente || null,
+            montoTotal: servicio.precio,
+            montoSena,
+            // Sin seña no hay nada que cobrar: se confirma directo.
+            estado: llevaSena ? 'pendiente' : 'confirmado',
+            vencePendienteEn: llevaSena
+              ? new Date(Date.now() + MINUTOS_RESERVA_PENDIENTE * 60 * 1000)
+              : null,
+          },
+        });
+      },
+      { isolationLevel: 'Serializable' },
+    );
+  } catch (error) {
+    if (error.status === 409) {
+      return res.status(409).json({ error: 'Horario no disponible' });
+    }
+    // P2034: conflicto de serialización — otro request ganó el slot.
+    if (error.code === 'P2034') {
+      return res.status(409).json({ error: 'Horario no disponible, intentá con otro.' });
+    }
+    throw error;
+  }
 
   if (!llevaSena) {
     return res.status(201).json({ turno, pago: null });
