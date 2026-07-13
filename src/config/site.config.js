@@ -32,6 +32,7 @@ export const siteConfig = {
       promoBarFondo: '#4a353b',
       promoBarTexto: '#f6eae6',
       exito: '#5fa97c',
+      estrellas: '#c9973f',
     },
     fuenteTitulos: "'Playfair Display', Georgia, serif",
     fuenteTexto: "'Inter', system-ui, sans-serif",
@@ -39,6 +40,18 @@ export const siteConfig = {
   },
 
   textos: {
+    hero: {
+      eyebrow: 'Estética facial · Palermo, Buenos Aires',
+      tituloPrincipal: 'Tu piel en manos expertas.',
+      tituloEnfasis: 'Tu turno, online en un minuto.',
+      subcopy:
+        'Cinco años cuidando rostros en Palermo. Elegí tu tratamiento, el día y la hora directo desde acá, sin mensajes, sin espera.',
+      ctaPrimario: 'Reservar turno online →',
+      ctaSecundario: 'o escribinos por WhatsApp',
+      disponibilidad: 'Hoy hay turnos disponibles',
+      ratingValor: '4,9',
+      ratingTexto: 'en Google · más de 500 clientas nos eligen',
+    },
     servicios: {
       titulo: 'Nuestros servicios',
       subtitulo: 'Elegí tu tratamiento y reservá tu turno en un toque.',

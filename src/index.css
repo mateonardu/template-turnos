@@ -18,6 +18,7 @@
   --color-promo-bar: var(--color-promo-bar-fondo);
   --color-promo-bar-foreground: var(--color-promo-bar-texto);
   --color-exito: var(--color-exito);
+  --color-estrellas: var(--color-estrellas);
 
   --font-heading: var(--fuente-titulos);
   --font-body: var(--fuente-texto);
@@ -34,6 +35,18 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Entrada escalonada de los elementos del Hero */
+@keyframes aura-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Compensa la altura del header sticky (barra promo + nav) al navegar por anclas */

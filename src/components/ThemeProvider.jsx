@@ -21,6 +21,7 @@ export default function ThemeProvider({ children }) {
     root.style.setProperty('--color-promo-bar-fondo', colores.promoBarFondo)
     root.style.setProperty('--color-promo-bar-texto', colores.promoBarTexto)
     root.style.setProperty('--color-exito', colores.exito)
+    root.style.setProperty('--color-estrellas', colores.estrellas)
     root.style.setProperty('--fuente-titulos', fuenteTitulos)
     root.style.setProperty('--fuente-texto', fuenteTexto)
     root.style.setProperty('--fuente-ui', fuenteUI)
