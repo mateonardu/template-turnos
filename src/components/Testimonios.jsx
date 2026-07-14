@@ -1,9 +1,30 @@
 import { siteConfig } from '../config/site.config'
 
+const CARD_ANCHO_ESTIMADO = 340 // 320px de tarjeta + 20px de gap
+const MEDIO_ANCHO_MINIMO = 2600 // más ancho que cualquier viewport real
+const VELOCIDAD_PX_POR_SEG = 27
+
 export default function Testimonios() {
   const { titulo, subtitulo } = siteConfig.textos.testimonios
   const { testimonios } = siteConfig
-  const tarjetas = [...testimonios, ...testimonios]
+
+  // El marquee duplica el set y anima -50% del ancho total: para que
+  // nunca se vea el final del track antes de que vuelva a arrancar,
+  // cada mitad tiene que ser más ancha que el viewport. Con pocos
+  // testimonios un solo set no alcanza, así que se repite las veces
+  // que hagan falta (y la duración escala con el ancho para que la
+  // velocidad de desplazamiento se sienta igual sea cual sea el largo).
+  const repeticionesPorMitad = Math.max(
+    2,
+    Math.ceil(MEDIO_ANCHO_MINIMO / (testimonios.length * CARD_ANCHO_ESTIMADO)),
+  )
+  const mitadAnchoEstimado =
+    repeticionesPorMitad * testimonios.length * CARD_ANCHO_ESTIMADO
+  const duracionSeg = Math.round(mitadAnchoEstimado / VELOCIDAD_PX_POR_SEG)
+  const tarjetas = Array.from(
+    { length: repeticionesPorMitad * 2 },
+    () => testimonios,
+  ).flat()
 
   return (
     <section id="testimonios" className="overflow-hidden py-16">
@@ -15,7 +36,10 @@ export default function Testimonios() {
       </header>
 
       <div className="[-webkit-mask-image:linear-gradient(90deg,transparent,black_6%,black_94%,transparent)] [mask-image:linear-gradient(90deg,transparent,black_6%,black_94%,transparent)]">
-        <ul className="animate-[aura-marquee_38s_linear_infinite] flex w-max gap-5 py-1.5 hover:[animation-play-state:paused]">
+        <ul
+          className="animate-[aura-marquee_1s_linear_infinite] flex w-max gap-5 py-1.5 hover:[animation-play-state:paused]"
+          style={{ animationDuration: `${duracionSeg}s` }}
+        >
           {tarjetas.map((testimonio, i) => (
             <li
               key={`${testimonio.nombre}-${i}`}
