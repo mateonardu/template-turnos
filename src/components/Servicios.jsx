@@ -34,7 +34,7 @@ function ServicioCard({ servicio }) {
           <span className="text-sm opacity-70">
             {formatDuracion(servicio.duracionMin)}
           </span>
-          <span className="font-heading text-lg font-bold text-primary">
+          <span className="font-body text-lg font-bold text-primary">
             {formatPrecio(servicio.precio)}
           </span>
         </div>

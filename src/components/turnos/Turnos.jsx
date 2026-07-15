@@ -53,7 +53,7 @@ function EstadoVacio() {
 
   return (
     <div className="py-6 text-center">
-      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary font-heading text-xl text-primary">
+      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary font-body text-xl text-primary">
         1
       </div>
       <p className="font-heading text-xl font-semibold">{estadoVacioTitulo}</p>

@@ -71,3 +71,17 @@ section[id] {
 body {
   @apply bg-background text-foreground font-body;
 }
+
+/* Vollkorn solo en h1/h2/h3 rectos: la cursiva existente (em/.italic) dentro de
+   un heading conserva la tipografía original (--font-heading), no Vollkorn. */
+h1,
+h2,
+h3 {
+  font-family: 'Vollkorn', serif;
+}
+
+h1 :is(em, .italic),
+h2 :is(em, .italic),
+h3 :is(em, .italic) {
+  font-family: var(--font-heading);
+}

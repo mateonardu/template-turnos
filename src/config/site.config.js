@@ -185,7 +185,7 @@ export const siteConfig = {
     numero: '5491122334455', // sin "+", formato wa.me
     mensajes: {
       consultaGeneral:
-        'Hola! Vi la página de Estética Aura y quiero hacer una consulta.',
+        'Hola, tenía una consulta sobre los servicios',
       // {servicio}, {fecha}, {hora} y {nombre} se interpolan al confirmar la reserva.
       reservaTurno:
         'Hola! Soy {nombre}. Quiero confirmar mi turno de {servicio} el {fecha} a las {hora} hs.',
@@ -194,15 +194,15 @@ export const siteConfig = {
 
   secciones: {
     testimonios: true,
-    galeria: true,
+    galeria: false,
     equipo: false,
     promo: true,
   },
 
   promo: {
     activa: true,
-    titulo: '20% OFF en tu primera visita',
-    texto: 'Mencioná la promo al reservar por WhatsApp y obtené el descuento en cualquier servicio.',
+    titulo: '10% OFF en tu primera reserva online',
+    texto: 'Reservá tu turno online y obtené el descuento en tu primera visita.',
   },
 
   // Barra fija de promociones, arriba del todo. Rota entre los mensajes cada

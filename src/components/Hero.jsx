@@ -61,7 +61,7 @@ export default function Hero() {
           </p>
 
           <h1
-            className={`mb-5 font-heading text-[clamp(36px,5vw,60px)] leading-[1.12] font-semibold tracking-[-0.01em] text-foreground text-balance ${ANIM_12}`}
+            className={`mb-5 font-heading text-[clamp(36px,5vw,58px)] leading-[1.12] font-semibold tracking-[-0.01em] text-foreground text-balance ${ANIM_12}`}
           >
             {hero.tituloPrincipal}
             <br />
